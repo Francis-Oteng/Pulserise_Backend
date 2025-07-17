@@ -1,4 +1,4 @@
-package com.pulserise.pulserise.service;
+package com.pulserise.pulserise.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,19 +11,19 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendVerificationEmail(String email, String token) {
+    public void sendVerificationEmail(String to, String token) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Verify your email");
-        message.setText("Your verification token: " + token);
+        message.setTo(to);
+        message.setSubject("Email Verification");
+        message.setText("To verify your email, please use the following token: " + token);
         mailSender.send(message);
     }
 
-    public void sendResetEmail(String email, String token) {
+    public void sendPasswordResetEmail(String to, String token) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Password Reset");
-        message.setText("Your password reset token: " + token);
+        message.setTo(to);
+        message.setSubject("Password Reset Request");
+        message.setText("To reset your password, please use the following token: " + token);
         mailSender.send(message);
     }
 }
