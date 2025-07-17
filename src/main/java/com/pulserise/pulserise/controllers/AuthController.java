@@ -1,6 +1,7 @@
 package com.pulserise.pulserise.controllers;
 
-import com.pulserise.pulserise.dto.User;
+import com.pulserise.pulserise.dto.fetch.UserDTO;
+import com.pulserise.pulserise.dto.fetch.UserLoginDTO;
 import com.pulserise.pulserise.dto.ApiResponse;
 import com.pulserise.pulserise.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +16,23 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody User userDto) {
-        ApiResponse response = authService.register(userDto);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse> register(@RequestBody UserDTO user) {
+        try {
+            ApiResponse response = authService.register(user);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody User userDto) {
-        // This will return a response containing the JWT token if credentials are valid
-        ApiResponse response = authService.login(userDto);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse> login(@RequestBody UserLoginDTO userDto) {
+        try {
+            ApiResponse response = authService.login(userDto);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
     }
-} 
+}
