@@ -1,4 +1,9 @@
 package com.pulserise.pulserise_backend.enums;
 
-public class GoalType {
+public enum GoalType {
+    GET_FIT,
+    BUILD_MUSCLE,
+    IMPROVE_ENDURANCE,
+    STAY_ACTIVE,
+    TONE_UP
 }

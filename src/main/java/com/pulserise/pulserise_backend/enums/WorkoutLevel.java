@@ -1,4 +1,7 @@
 package com.pulserise.pulserise_backend.enums;
 
-public class WorkoutLevel {
+public enum WorkoutLevel {
+    BEGINNER,
+    INTERMEDIATE,
+    ADVANCED
 }

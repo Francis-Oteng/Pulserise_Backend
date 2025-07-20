@@ -1,35 +1,80 @@
 package com.pulserise.pulserise_backend.entities;
 
-import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
-@Table(name = "users")
-public class User {
+@Data
+@Builder
+@AllArgsConstructor
+@Table(name="user")
+
+public class User implements UserDetails{
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+private Integer id;
 
-    @Column(unique = true)
-    private String email;
+private String firstname;
 
-    private String password;
-    private boolean emailVerified = false;
-    private String verificationToken;
+private String lastname;
 
-    public User() {}
+private String  email;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+private String password;
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+private String verificationToken;
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public User() {
 
-    public boolean isEmailVerified() { return emailVerified; }
-    public void setEmailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
+    }
 
-    public String getVerificationToken() { return verificationToken; }
-    public void setVerificationToken(String verificationToken) { this.verificationToken = verificationToken; }
+    public String getVerificationToken() {
+    return verificationToken;
+}
+
+public void setVerificationToken(String verificationToken) {
+    this.verificationToken = verificationToken;
+}
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getPassword() {
+        return "";
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    public String  getpassword(){
+            return password;
+
+    }
 }
