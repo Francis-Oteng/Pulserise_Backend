@@ -1,4 +1,4 @@
-package com.pulserise.workoutpp.config;
+package com.pulserise.workoutapp.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

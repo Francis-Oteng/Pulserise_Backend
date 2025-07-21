@@ -1,4 +1,4 @@
-package com.pulserise.workoutapp.dto;
+package dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

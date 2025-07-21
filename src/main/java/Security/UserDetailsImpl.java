@@ -1,4 +1,4 @@
-package com.pulserise.workoutapp.security;
+package Security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workout.app.model.User;
@@ -13,13 +13,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class UserDetailsImpl {
-    @AllArgsConstructor
+public class UserDetailsImpl implements UserDetails {
     @Getter
-    public class UserDetailsImpl implements UserDetails {
         private static final long serialVersionUID = 1L;
+    private static User user;
 
-        private String id;
+    private String id;
         private String username;
         private String email;
 
@@ -30,20 +29,37 @@ public class UserDetailsImpl {
         private Collection<? extends GrantedAuthority> authorities;
 
         public static UserDetailsImpl build(User user) {
+            UserDetailsImpl.user = user;
             List<GrantedAuthority> authorities = user.getRoles().stream()
                     .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                     .collect(Collectors.toList());
 
-            return new UserDetailsImpl(
+            UserDetailsImpl userDetails = new UserDetailsImpl(
                     user.getId(),
                     user.getUsername(),
                     user.getEmail(),
                     user.getPassword(),
                     user.isProfileCompleted(),
                     authorities);
+            return userDetails;
         }
 
-        @Override
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getPassword() {
+        return "";
+    }
+
+    @Override
+    public String getUsername() {
+        return "";
+    }
+
+    @Override
         public boolean isAccountNonExpired() {
             return true;
         }

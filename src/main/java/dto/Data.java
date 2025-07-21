@@ -1,4 +1,4 @@
-package com.pulserise.workoutapp.dto;
+package dto;
 
 public @interface Data {
 }
