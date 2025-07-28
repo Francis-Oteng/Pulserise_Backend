@@ -1,0 +1,20 @@
+{
+  "name": "workout-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Francis-Oteng/Pulserise_Backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Francis-Oteng/Pulserise_Backend/issues"
+  },
+  "homepage": "https://github.com/Francis-Oteng/Pulserise_Backend#readme",
+  "description": ""
+}
