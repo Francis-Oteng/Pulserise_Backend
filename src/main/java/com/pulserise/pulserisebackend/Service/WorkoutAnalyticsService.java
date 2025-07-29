@@ -23,9 +23,6 @@ public class WorkoutAnalyticsService {
     @Autowired
     private WorkoutRepository workoutRepository;
     
-    @Autowired
-    private ExerciseRepository exerciseRepository;
-    
     public WorkoutAnalyticsResponse getComprehensiveAnalytics(User user, String period) {
         logger.info("Generating comprehensive analytics for user: {} with period: {}", user.getUsername(), period);
         
@@ -82,8 +79,8 @@ public class WorkoutAnalyticsService {
         WorkoutAnalyticsResponse.MuscleGroupAnalysis analysis = new WorkoutAnalyticsResponse.MuscleGroupAnalysis();
         
         // Get volume by muscle group
-        List<Object[]> volumeData = workoutRepository.getVolumeByMuscleGroupAndDateRange(user, startDate, endDate);
-        List<Object[]> workoutCountData = workoutRepository.getWorkoutCountByMuscleGroupAndDateRange(user, startDate, endDate);
+        List<Object[]> volumeData = workoutRepository.getVolumeByWorkoutType(user, startDate, endDate);
+        List<Object[]> workoutCountData = workoutRepository.getWorkoutTypeDistribution(user, startDate, endDate);
         
         Map<String, WorkoutAnalyticsResponse.MuscleGroupStats> muscleGroupStats = new HashMap<>();
         
@@ -206,7 +203,8 @@ public class WorkoutAnalyticsService {
         }
         
         // Muscle group balance insight
-        List<Object[]> muscleGroupData = workoutRepository.getWorkoutCountByMuscleGroupAndDateRange(user, startDate, endDate);
+        List<Object[]> muscleGroupData = workoutRepository.getWorkoutTypeDistribution(user, startDate, endDate);
+
         if (muscleGroupData.size() < 3) {
             insights.add(new WorkoutAnalyticsResponse.PersonalizedInsight(
                 "suggestion",
@@ -332,8 +330,7 @@ public class WorkoutAnalyticsService {
     
     private void calculateWorkoutStreaks(User user, WorkoutAnalyticsResponse.WorkoutStats stats) {
         // Get recent workouts to calculate current streak
-        List<Workout> recentWorkouts = workoutRepository.findByUserAndStartTimeAfter(user, LocalDateTime.now().minusDays(30));
-        
+        List<Workout> recentWorkouts = workoutRepository.findByUserAndStartTimeAfterOrderByStartTimeDesc(user, LocalDateTime.now().minusDays(30));        
         // Simple streak calculation (can be enhanced)
         int currentStreak = 0;
         int longestStreak = 0;
