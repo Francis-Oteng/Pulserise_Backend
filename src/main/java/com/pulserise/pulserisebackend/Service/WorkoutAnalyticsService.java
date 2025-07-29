@@ -4,7 +4,6 @@ import com.pulserise.pulserisebackend.Dto.WorkoutAnalyticsResponse;
 import com.pulserise.pulserisebackend.Model.User;
 import com.pulserise.pulserisebackend.Model.Workout;
 import com.pulserise.pulserisebackend.Repository.WorkoutRepository;
-import com.pulserise.pulserisebackend.Repository.ExerciseRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
