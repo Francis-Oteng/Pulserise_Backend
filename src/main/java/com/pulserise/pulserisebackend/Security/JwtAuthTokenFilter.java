@@ -14,11 +14,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.pulserise.pulserisebackend.Service.UserDetailsServiceImpl;
 
+@Component
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private com.pulserise.pulserisebackend.Security.JwtUtils jwtUtils;

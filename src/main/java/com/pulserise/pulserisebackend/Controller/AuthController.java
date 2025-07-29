@@ -25,7 +25,7 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
-    AuthService authService;
+    private AuthService authService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {

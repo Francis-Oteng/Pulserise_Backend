@@ -31,27 +31,27 @@ public class ChatService {
 
     public ChatResponse sendMessage(ChatRequest chatRequest) {
         try {
-            if (groqAiConfig.getApiKey() == null || groqAiConfig.getApiKey().isEmpty()) {
-                logger.error("Groq API key is not configured");
-                return new ChatResponse("AI service is not properly configured");
+            if (groqAiConfig.getChatApiKey() == null || groqAiConfig.getChatApiKey().isEmpty()) {
+                logger.error("Chat API key is not configured");
+                return new ChatResponse("AI chat service is not properly configured");
             }
 
             // Prepare the request payload for Groq API
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", groqAiConfig.getModel());
+            requestBody.put("model", groqAiConfig.getChatModel());
             requestBody.put("messages", List.of(
                 Map.of("role", "system", "content", buildSystemPrompt()),
                 Map.of("role", "user", "content", buildUserMessage(chatRequest))
             ));
-            requestBody.put("max_tokens", 1000);
-            requestBody.put("temperature", 0.7);
+            requestBody.put("max_tokens", groqAiConfig.getChatMaxTokens());
+            requestBody.put("temperature", groqAiConfig.getChatTemperature());
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
 
             Request request = new Request.Builder()
-                    .url(groqAiConfig.getApiUrl())
+                    .url(groqAiConfig.getChatApiUrl())
                     .post(RequestBody.create(jsonBody, JSON))
-                    .addHeader("Authorization", "Bearer " + groqAiConfig.getApiKey())
+                    .addHeader("Authorization", "Bearer " + groqAiConfig.getChatApiKey())
                     .addHeader("Content-Type", "application/json")
                     .build();
 
@@ -59,13 +59,13 @@ public class ChatService {
                 if (response.isSuccessful() && response.body() != null) {
                     return parseGroqResponse(response.body().string());
                 } else {
-                    logger.error("Groq API returned status: {}", response.code());
+                    logger.error("Groq Chat API returned status: {}", response.code());
                     return new ChatResponse("Failed to get response from AI service");
                 }
             }
 
         } catch (Exception e) {
-            logger.error("Error calling Groq API: ", e);
+            logger.error("Error calling Groq Chat API: ", e);
             return new ChatResponse("An error occurred while processing your request: " + e.getMessage());
         }
     }
@@ -104,7 +104,7 @@ public class ChatService {
                 
                 if (message != null) {
                     String content = message.get("content").asText();
-                    String model = jsonNode.get("model") != null ? jsonNode.get("model").asText() : groqAiConfig.getModel();
+                    String model = jsonNode.get("model") != null ? jsonNode.get("model").asText() : groqAiConfig.getChatModel();
                     
                     return new ChatResponse(content, model);
                 }
@@ -120,6 +120,6 @@ public class ChatService {
     }
 
     public boolean isServiceAvailable() {
-        return groqAiConfig.getApiKey() != null && !groqAiConfig.getApiKey().isEmpty();
+        return groqAiConfig.getChatApiKey() != null && !groqAiConfig.getChatApiKey().isEmpty();
     }
 }
