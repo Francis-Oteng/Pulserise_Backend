@@ -56,7 +56,6 @@ public class ChatService {
                     .build();
 
             try (Response response = groqHttpClient.newCall(request).execute()) {
-                System.out.println("Response: " + response.body().string());
                 if (response.isSuccessful() && response.body() != null) {
                     return parseGroqResponse(response.body().string());
                 } else {
@@ -106,7 +105,7 @@ public class ChatService {
                 if (message != null) {
                     String content = message.get("content").asText();
                     String model = jsonNode.get("model") != null ? jsonNode.get("model").asText() : groqAiConfig.getChatModel();
-                    
+                    System.out.println("Content: " + content);
                     return new ChatResponse(content, model);
                 }
             }

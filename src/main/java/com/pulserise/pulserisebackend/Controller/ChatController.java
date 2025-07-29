@@ -34,7 +34,6 @@ public class ChatController {
             }
 
             ChatResponse response = chatService.sendMessage(chatRequest);
-            
             if (response.isSuccess()) {
                 return ResponseEntity.ok(response);
             } else {
