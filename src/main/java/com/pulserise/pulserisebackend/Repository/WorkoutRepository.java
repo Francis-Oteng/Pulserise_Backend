@@ -62,12 +62,12 @@ public interface WorkoutRepository extends JpaRepository<Workout, Long> {
     @Query("SELECT AVG(w.durationMinutes) FROM Workout w WHERE w.user = :user AND w.completed = true AND w.durationMinutes IS NOT NULL AND w.startTime BETWEEN :startDate AND :endDate")
     Double getAverageWorkoutDuration(@Param("user") User user, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     
-    // Get workout frequency by day of week (1=Sunday, 2=Monday, etc.)
-    @Query("SELECT DAYOFWEEK(w.startTime) as dayOfWeek, COUNT(w) FROM Workout w WHERE w.user = :user AND w.completed = true AND w.startTime BETWEEN :startDate AND :endDate GROUP BY DAYOFWEEK(w.startTime) ORDER BY dayOfWeek")
+    // Get workout frequency by day of week (0=Sunday, 1=Monday, etc. for PostgreSQL)
+    @Query("SELECT EXTRACT(DOW FROM w.startTime) as dayOfWeek, COUNT(w) FROM Workout w WHERE w.user = :user AND w.completed = true AND w.startTime BETWEEN :startDate AND :endDate GROUP BY EXTRACT(DOW FROM w.startTime) ORDER BY dayOfWeek")
     List<Object[]> getWorkoutFrequencyByDayOfWeek(@Param("user") User user, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     
-    // Get workout frequency by month
-    @Query("SELECT YEAR(w.startTime) as year, MONTH(w.startTime) as month, COUNT(w) FROM Workout w WHERE w.user = :user AND w.completed = true AND w.startTime BETWEEN :startDate AND :endDate GROUP BY YEAR(w.startTime), MONTH(w.startTime) ORDER BY year, month")
+    // Get workout frequency by month (PostgreSQL compatible)
+    @Query("SELECT EXTRACT(YEAR FROM w.startTime) as year, EXTRACT(MONTH FROM w.startTime) as month, COUNT(w) FROM Workout w WHERE w.user = :user AND w.completed = true AND w.startTime BETWEEN :startDate AND :endDate GROUP BY EXTRACT(YEAR FROM w.startTime), EXTRACT(MONTH FROM w.startTime) ORDER BY year, month")
     List<Object[]> getWorkoutFrequencyByMonth(@Param("user") User user, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     
     // Get recent workouts with limit
@@ -86,23 +86,23 @@ public interface WorkoutRepository extends JpaRepository<Workout, Long> {
     @Query("SELECT COALESCE(SUM(w.totalSets), 0), COALESCE(SUM(w.totalReps), 0) FROM Workout w WHERE w.user = :user AND w.completed = true AND w.startTime BETWEEN :startDate AND :endDate")
     Object[] getTotalSetsAndRepsByUserAndDateRange(@Param("user") User user, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     
-    // Get workout streak (consecutive days with workouts)
+    // Get workout streak (consecutive days with workouts) - PostgreSQL compatible
     @Query(value = """
         WITH RECURSIVE workout_dates AS (
-            SELECT DISTINCT DATE(start_time) as workout_date
-            FROM workouts 
+            SELECT DISTINCT DATE_TRUNC('day', start_time)::date as workout_date
+            FROM workouts
             WHERE user_id = :userId AND completed = true
             ORDER BY workout_date DESC
         ),
         date_diffs AS (
             SELECT workout_date,
                    LAG(workout_date) OVER (ORDER BY workout_date DESC) as prev_date,
-                   DATEDIFF(LAG(workout_date) OVER (ORDER BY workout_date DESC), workout_date) as day_diff
+                   (LAG(workout_date) OVER (ORDER BY workout_date DESC) - workout_date) as day_diff
             FROM workout_dates
         ),
         streak_groups AS (
             SELECT workout_date,
-                   SUM(CASE WHEN day_diff = 1 OR day_diff IS NULL THEN 0 ELSE 1 END) 
+                   SUM(CASE WHEN day_diff = 1 OR day_diff IS NULL THEN 0 ELSE 1 END)
                    OVER (ORDER BY workout_date DESC) as streak_group
             FROM date_diffs
         )
@@ -133,8 +133,8 @@ public interface WorkoutRepository extends JpaRepository<Workout, Long> {
         """)
     List<Object[]> getMonthlyWorkoutSummary(@Param("user") User user, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     
-    // Check if user has workout on specific date
-    @Query("SELECT COUNT(w) > 0 FROM Workout w WHERE w.user = :user AND w.completed = true AND DATE(w.startTime) = DATE(:date)")
+    // Check if user has workout on specific date (PostgreSQL compatible)
+    @Query("SELECT COUNT(w) > 0 FROM Workout w WHERE w.user = :user AND w.completed = true AND DATE_TRUNC('day', w.startTime) = DATE_TRUNC('day', :date)")
     Boolean hasWorkoutOnDate(@Param("user") User user, @Param("date") LocalDateTime date);
     
     // Get workout by user and id
